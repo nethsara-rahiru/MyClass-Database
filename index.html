@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Folder Viewer</title>
+  <style>
+    body, h1, ul { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f2f7ff; color:#333; }
+    .container { max-width:600px; margin:50px auto; padding:20px; background:#fff; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
+    h1 { text-align:center; margin-bottom:25px; color:#4a69bd; }
+    ul { list-style:none; }
+    li { background:#e9efff; margin-bottom:10px; padding:12px 15px; border-radius:8px; font-size:16px; cursor:pointer; transition:0.3s; }
+    li:hover { background:#d6e0ff; transform:translateX(3px); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📂 GitHub Folder Viewer</h1>
+    <ul id="folderList"></ul>
+  </div>
+
+  <script>
+    const GITHUB_USER = "nethsara-rahiru";
+    const GITHUB_REPO = "MyClass-Database";
+    const API_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`;
+
+    // Change this to the folder you want to auto-open
+    let currentFolder = ""; 
+    let folderHistory = [];
+
+    function replaceImagePaths(htmlContent, files) {
+      const fileMap = {};
+      files.forEach(f => fileMap[f.name.toLowerCase()] = f.download_url);
+
+      return htmlContent.replace(/<img\s+[^>]*src=["']([^"']+)["'][^>]*>/gi, (match, src) => {
+        const url = fileMap[src.toLowerCase()];
+        if (url) return match.replace(src, url);
+        return match;
+      });
+    }
+
+    function loadFolder(folderPath) {
+      const folderList = document.getElementById("folderList");
+      folderList.innerHTML = "<li>Loading...</li>";
+
+      fetch(API_URL + folderPath)
+        .then(res => res.json())
+        .then(data => {
+          folderList.innerHTML = "";
+
+          if (!data || data.length === 0) {
+            folderList.innerHTML = "<li>❌ No files found.</li>";
+            return;
+          }
+
+          // Auto-open index.html or index.txt
+          const indexFile = data.find(f => f.name.toLowerCase() === "index.html" || f.name.toLowerCase() === "index.txt");
+          if (indexFile) {
+            fetch(indexFile.download_url)
+              .then(res => res.text())
+              .then(content => {
+                const updated = replaceImagePaths(content, data);
+                document.open();
+                document.write(updated);
+                document.close();
+              });
+            return; // stop further listing
+          }
+
+          // Back button
+          if (folderHistory.length > 0) {
+            const backLi = document.createElement("li");
+            backLi.textContent = "⬅️ Back";
+            backLi.style.fontWeight = "bold";
+            backLi.style.cursor = "pointer";
+            backLi.addEventListener("click", () => {
+              const previousFolder = folderHistory.pop();
+              loadFolder(previousFolder);
+            });
+            folderList.appendChild(backLi);
+          }
+
+          // List files and folders
+          data.forEach(file => {
+            const li = document.createElement("li");
+            li.textContent = file.type === "dir" ? "📂 " + file.name : "📄 " + file.name;
+
+            if (file.type === "dir") {
+              li.style.fontWeight = "bold";
+              li.addEventListener("click", () => {
+                folderHistory.push(folderPath);
+                loadFolder(file.path);
+              });
+            } else {
+              li.addEventListener("click", () => {
+                if (file.name.endsWith(".txt") || file.name.endsWith(".html")) {
+                  fetch(file.download_url)
+                    .then(res => res.text())
+                    .then(content => {
+                      const updated = replaceImagePaths(content, data);
+                      document.open();
+                      document.write(updated);
+                      document.close();
+                    });
+                } else if (file.name.match(/\.(png|jpg|jpeg|gif)$/i)) {
+                  const newWin = window.open();
+                  newWin.document.write(`<img src="${file.download_url}" style="max-width:100%;">`);
+                  newWin.document.close();
+                } else {
+                  window.open(file.html_url, "_blank");
+                }
+              });
+            }
+
+            folderList.appendChild(li);
+          });
+        })
+        .catch(err => console.error("Error:", err));
+    }
+
+    window.onload = () => loadFolder(currentFolder);
+  </script>
+</body>
+</html>
