@@ -6,7 +6,6 @@
 <title>Sample Image Card</title>
 <style>
   body {
-    /* display: flex; */
     padding-top: 10%;
     justify-content: center;
     align-items: center;
@@ -25,7 +24,7 @@
     overflow: hidden;
     width: 90%;
     text-align: center;
-    padding: 10px;;
+    padding: 10px;
     transition: transform 0.3s, box-shadow 0.3s;
   }
 
@@ -35,46 +34,40 @@
   }
 
   .card img {
-    border-top: black 1px solid;
     width: 100%;
     display: block;
     border-bottom: 5px solid white;
   }
 
-  .card h2 {
-    margin: 15px 0;
-    color: #fff;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-  }
-
   .card p {
-    text-align:left;
+    text-align: left;
     margin-top: 5px;
     margin-bottom: 5px;
-    color: #000000;
+    color: #717171;
     font-weight: bold;
     text-shadow: 1px 1px 2px rgba(89, 89, 89, 0.2);
   }
-
 </style>
 </head>
 <body>
 
 <div class="card">
   <p class="txt">Answer</p>
-  <img src="Answer.png" alt="Sample Image">
+  <img src="Answer.png" alt="Answer Image">
 </div>
 
 <div class="card">
   <p class="txt">Explanation</p>
-  <img src="Explanation.png" alt="Sample Image">
+  <img src="Explanation.png" alt="Explanation Image">
 </div>
 
 <script>
-  // You can later add JS effects if needed
-  const card = document.querySelector('.card');
-  card.addEventListener('click', () => {
-    alert('This is the sample image!');
+  // Loop through all images and hide card if image doesn't exist
+  document.querySelectorAll('.card img').forEach(img => {
+    img.onerror = function() {
+      // Hide the card if the image fails to load
+      this.closest('.card').style.display = 'none';
+    };
   });
 </script>
 
