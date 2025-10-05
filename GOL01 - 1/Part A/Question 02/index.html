@@ -17,12 +17,27 @@
 
   .card {
     margin: auto;
-    margin-top: 50px;
+    margin-top: 30px;
     background: linear-gradient(180deg, #ffffff5c, #ffffff, #ffffff, #ffffff);
     border-radius: 10px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     overflow: hidden;
     width: 90%;
+    text-align: center;
+    padding: 10px;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .emptyCard {
+    margin: auto;
+    margin-top: 30px;
+    border: #ffffff4a 1px solid;
+    background: linear-gradient(127deg, #ffffff40, #dedede29);
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    overflow: hidden;
+    width: 90%;
+    height: 200px;
     text-align: center;
     padding: 10px;
     transition: transform 0.3s, box-shadow 0.3s;
@@ -47,6 +62,14 @@
     font-weight: bold;
     text-shadow: 1px 1px 2px rgba(89, 89, 89, 0.2);
   }
+
+  .emptyCard p {
+    text-align: center;
+    margin-top: 90px;
+    margin-bottom: 5px;
+    color: #ffffffc2;
+    font-weight: bold;
+  }
 </style>
 </head>
 <body>
@@ -59,6 +82,10 @@
 <div class="card">
   <p class="txt">Explanation</p>
   <img src="Explanation.png" alt="Explanation Image">
+</div>
+
+<div class="emptyCard">
+  <p class="txt">No Explanation Uploaded</p>
 </div>
 
 <script>
