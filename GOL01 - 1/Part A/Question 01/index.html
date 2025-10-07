@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sample Image Card</title>
 <style>
-  :root {
-  color-scheme: light; /* Forces browsers to render in light mode */
-  }
 
   body {
     padding-top: 10%;
@@ -75,10 +72,23 @@
     font-weight: bold;
   }
 
-  @media (prefers-color-scheme: dark) {
+  /* Force light mode colors */
+:root {
+  color-scheme: light; /* affects form elements only */
+}
+
+/* Make sure all important elements have explicit colors */
+body, .card, .emptyCard {
+  background: none !important;
+  color: inherit !important;
+  -webkit-filter: none !important; /* prevent Safari color inversion */
+  filter: none !important;
+}
+
+/* Dark mode media query override */
+@media (prefers-color-scheme: dark) {
   body {
     background: linear-gradient(180deg, #5bc9ff, #b865f6) !important;
-    color: #000 !important;
   }
 
   .card {
@@ -94,6 +104,8 @@
     text-shadow: 1px 1px 2px rgba(89, 89, 89, 0.2) !important;
   }
 }
+
+
 
 </style>
 </head>
